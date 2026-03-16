@@ -35,7 +35,7 @@ export class Users {
   @Column({ name: "otp", type: "varchar", nullable: true })
   otp!: string;
 
-  @Column({ name: "status", type: "varchar", nullable: true })
+  @Column({ name: "status", type: "varchar", default: 1 })
   status!: string;
 
   @CreateDateColumn({
