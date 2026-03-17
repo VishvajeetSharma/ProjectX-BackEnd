@@ -2,6 +2,8 @@ import express from "express";
 import "dotenv/config";
 import cors from "cors";
 import { AppDataSource } from "./dbconfig/dbconfig";
+import userRouter from "./routes/user/userrouter";
+import adminRouter from "./routes/admin/adminrouter";
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -13,6 +15,8 @@ AppDataSource.initialize()
   .catch((err) => {
     console.log(err);
   });
+app.use("/user", userRouter);   
+app.use("/admin", adminRouter); 
 app.listen(PORT, () => {
   console.log("server is running on port:" + PORT);
 });
