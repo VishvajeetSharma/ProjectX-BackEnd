@@ -1,10 +1,7 @@
-import { error } from "node:console";
-import { message } from "../../entities/message";
 import { users } from "../../entities/user";
 import 'dotenv/config'
 import { createResponse } from "../../helpers/createResponse";
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'
 import { generateToken } from "../../helpers/jwt";
 export const userRegister = async (req: any, res: any) => {
  try{
