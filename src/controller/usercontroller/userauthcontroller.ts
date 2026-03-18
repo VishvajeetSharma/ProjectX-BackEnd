@@ -5,6 +5,7 @@ import 'dotenv/config'
 import { createResponse } from "../../helpers/createResponse";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
+import { generateToken } from "../../helpers/jwt";
 export const userRegister = async (req: any, res: any) => {
  try{
  const { name, email, password="Test@12345", mobile } = req.body;
@@ -32,9 +33,10 @@ export const userLogin = async (req: any, res: any) => {
          if(!isMatched){
            return createResponse(res, false, 404, "Please enter valid password", [], true);
          }else{
-          // const token=generateToken()
-          const token= jwt.sign({email:isExist.email},process.env.JWT_SECRET as string,{expiresIn:'24h'})
-           return createResponse(res, true, 200, "Login successfull",{ isExist,token}, false,);
+          const payload={email:isExist?.email,id:isExist?.id}
+          const token=generateToken(payload)
+          
+           return createResponse(res, true, 200, "Login successfull",{ ...isExist,token}, false,);
          }
      } 
  }catch(error){
