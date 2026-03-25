@@ -1,6 +1,7 @@
 import { mastercourse } from "../../entities/mastercourse";
 import { masterplan } from "../../entities/masterplan";
 import { createResponse } from "../../helpers/createResponse";
+import { uploadFile } from "../../helpers/fileUpload";
 
 export const createmasterplan = async (req: any, res: any) => {
   try {
@@ -68,20 +69,52 @@ export const deletemasterplan = async (req: any, res: any) => {
   }
 };
 
+
+
 export const createmastercourse = async (req: any, res: any) => {
   try {
     const { title, desc, level, rating, duration, type, status } = req.body;
-    
-    const isExist = await mastercourse.findOne({ where: { title } });
-    if (isExist) {
-      return createResponse(res, false, 400, "Course already exists", [], true);
+
+    if (!req.files || !req.files.thumbnail || !req.files.content) {
+      return createResponse(res, false, 400, "Thumbnail and Content required", [], true);
     }
-    const result = await mastercourse.save({ title, desc, level, rating, duration, type, status });
-    return createResponse(res, true, 200, "Course created successfully", result, false);
+
+    const thumbnail = req.files.thumbnail;
+    const content = req.files.content;
+     
+    uploadFile(thumbnail, "uploads", (err, thumbName) => {
+      if (err) {
+        return createResponse(res, false, 500, err, [], true);
+      }
+
+      uploadFile(content, "uploads", async (err2, contentName) => {
+        if (err2) {
+          return createResponse(res, false, 500, err2, [], true);
+        }
+
+      try {
+        const isExist = await mastercourse.findOne({ where: { title } });
+
+        if (isExist) {
+          return createResponse(res, false, 400, "Course already exists", [], true);
+        }
+
+        const result = await mastercourse.save({ title, desc, level, rating, duration,  type, status, thumbnail: thumbName, content: contentName, });
+
+        return createResponse(res, true, 200, "Course created successfully", result, false);
+      } catch (error: any) {
+        return createResponse(res, false, 500, error.message, [], true);
+      }
+      });
+    });
+
   } catch (error: any) {
-    return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
+    return createResponse(res, false, 500, error.message, [], true);
   }
 };
+
+
+
 
 export const getmastercourse = async (req: any, res: any) => {
   try {

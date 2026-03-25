@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerOptions));
-
+app.use("/file",express.static('uploads'))
 const PORT = process.env.PORT || 8000;
 AppDataSource.initialize()
   .then(() => {
