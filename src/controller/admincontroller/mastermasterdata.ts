@@ -148,7 +148,42 @@ export const updatemastercourse = async (req: any, res: any) => {
     if (!result) {
       return createResponse(res, false, 404, "Course not found", [], true);
     }
-    await mastercourse.update({ id }, { title, desc, level, rating, duration, type, status });
+
+    let thumbnailName = result.thumbnail;
+    let contentName = result.content;
+
+    const handleUploads = async () => {
+      if (req.files && req.files.thumbnail) {
+        await new Promise((resolve, reject) => {
+          uploadFile(req.files.thumbnail, "uploads", (err, name) => {
+            if (err) reject(err);
+            else {
+              thumbnailName = name;
+              resolve(name);
+            }
+          });
+        });
+      }
+
+      if (req.files && req.files.content) {
+        await new Promise((resolve, reject) => {
+          uploadFile(req.files.content, "uploads", (err, name) => {
+            if (err) reject(err);
+            else {
+              contentName = name;
+              resolve(name);
+            }
+          });
+        });
+      }
+    };
+
+    await handleUploads();
+
+    await mastercourse.update(
+      { id },
+      { title, desc, level, rating, duration, type, status, thumbnail: thumbnailName, content: contentName }
+    );
     const updatedResult = await mastercourse.findOne({ where: { id } });
     return createResponse(res, true, 200, "Course updated successfully", updatedResult, false);
   } catch (error: any) {
@@ -177,6 +212,50 @@ export const getUsers = async (req: any, res: any) => {
   try {
     const result = await users.find({ order: { created_at: "DESC" } });
     return createResponse(res, true, 200, "Users fetched successfully", result, false);
+  } catch (error: any) {
+    return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
+  }
+};
+
+export const deleteUser = async (req: any, res: any) => {
+  try {
+    const { id } = req.params;
+    const result = await users.findOne({ where: { id } });
+    if (!result) {
+      return createResponse(res, false, 404, "Course not found", [], true);
+    }
+    await users.delete({ id });
+    return createResponse(res, true, 200, "Course deleted successfully", result, false);
+  } catch (error: any) {
+    return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
+  }
+};
+
+export const getDashboardStats = async (req: any, res: any) => {
+  try {
+    const totalUsers = await users.count();
+    const activeUsers = await users.count({ where: { status: 1 } });
+
+    const totalPlans = await masterplan.count();
+    const activePlans = await masterplan.count({ where: { status: 1 } });
+
+    const totalCourses = await mastercourse.count();
+    const activeCourses = await mastercourse.count({ where: { status: 1 } });
+
+    // Mocking monthly data for the graph (can be improved with actual query)
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const graphData = months.map((month) => ({
+      name: month,
+      users: Math.floor(Math.random() * 100),
+      courses: Math.floor(Math.random() * 20),
+    }));
+
+    return createResponse(res, true, 200, "Dashboard stats fetched successfully", {
+      users: { total: totalUsers, active: activeUsers },
+      plans: { total: totalPlans, active: activePlans },
+      courses: { total: totalCourses, active: activeCourses },
+      graphData
+    }, false);
   } catch (error: any) {
     return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
   }
