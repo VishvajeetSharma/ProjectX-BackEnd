@@ -173,7 +173,6 @@ export const deletemastercourse = async (req: any, res: any) => {
 
 
 // Users 
-
 export const getUsers = async (req: any, res: any) => {
   try {
     const result = await users.find({ order: { created_at: "DESC" } });

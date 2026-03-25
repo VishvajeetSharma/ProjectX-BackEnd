@@ -10,9 +10,9 @@ const validationRules: { [key: string]: any } = {
     minLength: 6,
     message: "Password must be at least 6 characters long",
   },
-  phone: {
-    pattern: /^[0-9]{10}$/,
-    message: "Phone number must be 10 digits",
+  mobile: {
+    pattern: /^[6-9]\d{9}$/,
+    message: "Invalid mobile number",
   },
   name: {
     minLength: 2,
@@ -68,37 +68,50 @@ const validationRules: { [key: string]: any } = {
   },
 };
 
-export const validateMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const validateMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const body = req.body;
     const errors: { [key: string]: string } = {};
+    const trimmedBody: { [key: string]: any } = {}; // NEW OBJECT
 
     for (const [field, value] of Object.entries(body)) {
-      if (!value) {
+      // Trim string values
+      const trimmedValue = typeof value === "string" ? value.trim() : value;
+      trimmedBody[field] = trimmedValue; // Add to new object
+
+      // Required check
+      if (trimmedValue === "" || trimmedValue === null || trimmedValue === undefined) {
         errors[field] = `${field} is required`;
         continue;
       }
 
       const rule = validationRules[field];
       if (rule) {
-        if (rule.pattern && !rule.pattern.test(String(value))) {
+        // Pattern validation
+        if (rule.pattern && !rule.pattern.test(String(trimmedValue))) {
           errors[field] = rule.message;
         }
 
-        if (rule.minLength && String(value).length < rule.minLength) {
+        // Min length validation
+        if (rule.minLength && String(trimmedValue).length < rule.minLength) {
           errors[field] = rule.message;
         }
       }
     }
 
+    // Replace req.body with trimmed object
+    req.body = trimmedBody;
+
     if (Object.keys(errors).length > 0) {
-      return createResponse(res, false, 400, "Validation failed", errors, true);
+      return createResponse(res, false, 400, "Validation error", errors, true);
     }
 
     next();
-
-  } catch (error) {
-    return createResponse(res, false, 500, "Internal server error", error instanceof Error ? error.message : "Unknown error", true);
+  } catch (error: any) {
+    return createResponse( res, false, 500, error?.message || "Internal server error", error instanceof Error ? error.message : "Unknown error", true );
   }
 };
-

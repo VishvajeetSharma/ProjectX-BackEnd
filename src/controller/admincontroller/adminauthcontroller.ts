@@ -24,7 +24,7 @@ export const adminLogin = async (req: any, res: any) => {
  try{  
     const isExist = await admin.findOne({ where: { email } });
      if(!isExist){
-      return createResponse(res, false, 404, "User Not Found", [], true);
+      return createResponse(res, false, 404, "Admin Not Found", [], true);
      }else{
          const isMatched=await bcrypt.compare(password,isExist?.password);
          if(!isMatched){
@@ -37,6 +37,6 @@ export const adminLogin = async (req: any, res: any) => {
          }
      } 
  }catch(error){
- return createResponse(res, false, 500, "Internal Server Error", [], true);
+  return createResponse(res, false, 500, "Internal Server Error", [], true);
  }
 };
