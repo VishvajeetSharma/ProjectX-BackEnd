@@ -17,6 +17,7 @@ export class masterplan extends BaseEntity {
   @Column({ name: "price", type: "int", nullable: true })
   price: any;
 
+
   @Column({ name: "offer", type: "int", nullable: true })
   offer: any;
 

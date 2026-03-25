@@ -13,7 +13,7 @@ export class mastercourse extends BaseEntity {
 
   @Column({ name: "desc", type: "varchar", length: 255, nullable: true })
   desc: any;
-
+  
   @Column({ name: "level", type: "varchar", length: 255, nullable: true })
   level: any;
 
