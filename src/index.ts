@@ -7,6 +7,7 @@ import userRouter from "./routes/user/userrouter";
 import adminRouter from "./routes/admin/adminrouter";
 import expressfileupload from "express-fileupload";
 import swaggerOptions from "./config/swagger";
+import path from "path";
 
 const app = express();
 app.use(expressfileupload());
@@ -14,7 +15,18 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerOptions));
-app.use("/file",express.static('uploads'))
+app.use("/file", express.static(path.join(__dirname, "../uploads")));
+
+// Dedicated API to get images
+app.get("/get-image/:imageName", (req: any, res: any) => {
+  const { imageName } = req.params;
+  const filePath = path.join(__dirname, "../uploads", imageName);
+  res.sendFile(filePath, (err: any) => {
+    if (err) {
+      res.status(404).send({ success: false, message: "Image not found" });
+    }
+  });
+});
 const PORT = process.env.PORT || 8000;
 AppDataSource.initialize()
   .then(() => {

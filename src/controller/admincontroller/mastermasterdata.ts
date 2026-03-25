@@ -1,8 +1,11 @@
 import { mastercourse } from "../../entities/mastercourse";
 import { masterplan } from "../../entities/masterplan";
+import { users } from "../../entities/user";
 import { createResponse } from "../../helpers/createResponse";
 import { uploadFile } from "../../helpers/fileUpload";
 
+
+// Master Plans 
 export const createmasterplan = async (req: any, res: any) => {
   try {
     const { name, desc, credit, price, offer, duration, is_rec, status } = req.body;
@@ -19,7 +22,7 @@ export const createmasterplan = async (req: any, res: any) => {
 
 export const getmasterplan = async (req: any, res: any) => {
   try {
-    const result = await masterplan.find();
+    const result = await masterplan.find({ order: {created_at: "DESC", } });
     return createResponse(res, true, 200, "Plans fetched successfully", result, false);
   } catch (error: any) {
     return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
@@ -71,6 +74,8 @@ export const deletemasterplan = async (req: any, res: any) => {
 
 
 
+
+// Master Course 
 export const createmastercourse = async (req: any, res: any) => {
   try {
     const { title, desc, level, rating, duration, type, status } = req.body;
@@ -113,12 +118,9 @@ export const createmastercourse = async (req: any, res: any) => {
   }
 };
 
-
-
-
 export const getmastercourse = async (req: any, res: any) => {
   try {
-    const result = await mastercourse.find();
+    const result = await mastercourse.find({ order: {created_at: "DESC", } });
     return createResponse(res, true, 200, "Courses fetched successfully", result, false);
   } catch (error: any) {
     return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
@@ -163,6 +165,19 @@ export const deletemastercourse = async (req: any, res: any) => {
     }
     await mastercourse.delete({ id });
     return createResponse(res, true, 200, "Course deleted successfully", result, false);
+  } catch (error: any) {
+    return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
+  }
+};
+
+
+
+// Users 
+
+export const getUsers = async (req: any, res: any) => {
+  try {
+    const result = await users.find({ order: { created_at: "DESC" } });
+    return createResponse(res, true, 200, "Users fetched successfully", result, false);
   } catch (error: any) {
     return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
   }
