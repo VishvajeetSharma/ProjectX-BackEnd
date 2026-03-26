@@ -8,6 +8,7 @@ import adminRouter from "./routes/admin/adminrouter";
 import expressfileupload from "express-fileupload";
 import swaggerOptions from "./config/swagger";
 import path from "path";
+import publicRouter from "./routes/public/publicRouter";
 
 const app = express();
 app.use(expressfileupload());
@@ -38,7 +39,8 @@ AppDataSource.initialize()
   });
 
 app.use("/user", userRouter);   
-app.use("/admin", adminRouter); 
+app.use("/admin", adminRouter);
+app.use("/public", publicRouter)
 
 app.listen(PORT, () => {
   console.log("server is running on port:" + PORT);
