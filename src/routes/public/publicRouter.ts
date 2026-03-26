@@ -3,6 +3,6 @@ import { getRecMasterPlan } from "../../controller/public/publicMasterDataContro
 
 const publicRouter = express.Router();
 
-publicRouter.get("/user-master-plan",  getRecMasterPlan); 
+publicRouter.get("/get-rec-plan",  getRecMasterPlan); 
 
 export default publicRouter;
