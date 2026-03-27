@@ -4,42 +4,8 @@ import { plan } from "../../entities/plan";
 import { users } from "../../entities/user";
 import { createResponse } from "../../helpers/createResponse";
  
- 
 
-export const usergetmasterplan = async (req: any, res: any) => {
-  try {
-    const result = await masterplan.find({  where:{status:1}});
-    return createResponse(res, true, 200, "Plans fetched successfully", result, false);
-  } catch (error: any) {
-    return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
-  }
-}; 
-
-export const userPurchaseplan = async (req: any, res: any) => {
-  try {
-    const {plan_id}=req.body 
-     const user_id=req.user.id 
-    await  plan.save({user_id,plan_id})
-   const masterplanRes = await masterplan.findOne({  where:{id:plan_id}});
-   const userRes=await users.findOne({where:{id:user_id}})
-   const finalCredit:any=parseInt(masterplanRes?.credit)+parseInt(userRes?.credit);
-    await users.update({id:user_id},{credit:finalCredit})
-    return createResponse(res, true, 200, "Plans created  successfully", finalCredit, false);
-  } catch (error: any) {
-    return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
-  }
-  
-}; 
-// Master Course 
-  
-export const getmastercourse = async (req: any, res: any) => {
-  try {
-    const result = await mastercourse.find({ order: {created_at: "DESC", } });
-    return createResponse(res, true, 200, "Courses fetched successfully", result, false);
-  } catch (error: any) {
-    return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
-  }
-}; 
+// Dashboard States
 export const getDashboardStats = async (req: any, res: any) => {
   try {
     const totalUsers = await users.count();
@@ -70,7 +36,24 @@ export const getDashboardStats = async (req: any, res: any) => {
   }
 };
 
-export const userPurchasedplan = async (req: any, res: any) => {
+// Plan
+export const userPurchasePlan = async (req: any, res: any) => {
+  try {
+    const {plan_id}=req.body 
+    const user_id=req.user.id 
+    await  plan.save({user_id,plan_id})
+    const masterplanRes = await masterplan.findOne({  where:{id:plan_id}});
+    const userRes=await users.findOne({where:{id:user_id}})
+    const finalCredit:any=parseInt(masterplanRes?.credit)+parseInt(userRes?.credit);
+    await users.update({id:user_id},{credit:finalCredit})
+    return createResponse(res, true, 200, "Plans created  successfully", finalCredit, false);
+  } catch (error: any) {
+    return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
+  }
+  
+}; 
+  
+export const userPurchasedPlan = async (req: any, res: any) => {
   try {
     const user_id = req.user.id;
 
@@ -84,6 +67,16 @@ export const userPurchasedplan = async (req: any, res: any) => {
     return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
   }
 };
+
+// Master Course
+export const getMasterCourse = async (req: any, res: any) => {
+  try {
+    const result = await mastercourse.find({ order: {created_at: "DESC", } });
+    return createResponse(res, true, 200, "Courses fetched successfully", result, false);
+  } catch (error: any) {
+    return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
+  }
+}; 
 
 export const userViewCourse = async (req: any, res: any) => {
   try {

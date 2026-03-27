@@ -3,6 +3,8 @@ import 'dotenv/config'
 import { createResponse } from "../../helpers/createResponse";
 import bcrypt from 'bcrypt';
 import { generateToken } from "../../helpers/jwt";
+
+
 export const userRegister = async (req: any, res: any) => {
  try{
  const { name, email, password="Test@12345", mobile } = req.body;
@@ -18,7 +20,6 @@ export const userRegister = async (req: any, res: any) => {
  return createResponse(res, false, 500, "Internal Server Error", [], true);
  }
 };
-
 export const userLogin = async (req: any, res: any) => {
   const {email,password}=req.body;
  try{  

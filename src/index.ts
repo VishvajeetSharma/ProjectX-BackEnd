@@ -38,9 +38,9 @@ AppDataSource.initialize()
     console.log(err);
   });
 
-app.use("/user", userRouter);   
+app.use("/public", publicRouter);
 app.use("/admin", adminRouter);
-app.use("/public", publicRouter)
+app.use("/user", userRouter);   
 
 app.listen(PORT, () => {
   console.log("server is running on port:" + PORT);
