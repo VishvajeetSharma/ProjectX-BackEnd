@@ -17,13 +17,14 @@ export const usergetmasterplan = async (req: any, res: any) => {
 
 export const userPurchaseplan = async (req: any, res: any) => {
   try {
-    const {user_id,plan_id}=req.body 
+    const {plan_id}=req.body 
+     const user_id=req.user.id 
     await  plan.save({user_id,plan_id})
    const masterplanRes = await masterplan.findOne({  where:{id:plan_id}});
    const userRes=await users.findOne({where:{id:user_id}})
    const finalCredit:any=parseInt(masterplanRes?.credit)+parseInt(userRes?.credit);
     await users.update({id:user_id},{credit:finalCredit})
-    return createResponse(res, true, 200, "Plans fetched successfully", finalCredit, false);
+    return createResponse(res, true, 200, "Plans created  successfully", finalCredit, false);
   } catch (error: any) {
     return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
   }

@@ -7,6 +7,6 @@ const userRouter = express.Router();
 userRouter.post("/register", validateMiddleware, userRegister);  
 userRouter.post("/login", validateMiddleware, userLogin);
 
-userRouter.get("/user-master-plan",  usergetmasterplan);
-userRouter.post("/user-purchase-plan",userPurchaseplan); 
+userRouter.get("/user-master-plan", verifyToken, usergetmasterplan);
+userRouter.post("/user-purchase-plan",verifyToken,userPurchaseplan); 
 export default userRouter;
