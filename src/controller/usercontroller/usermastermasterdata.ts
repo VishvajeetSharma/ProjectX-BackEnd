@@ -69,3 +69,18 @@ export const getDashboardStats = async (req: any, res: any) => {
     return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
   }
 };
+
+export const userPurchasedplan = async (req: any, res: any) => {
+  try {
+    const user_id = req.user.id;
+
+    const data = await plan.createQueryBuilder('plan')
+      .leftJoinAndSelect(masterplan, "mp", "mp.id = plan.plan_id")
+      .where("plan.user_id = :user_id", { user_id })
+      .getRawMany();
+
+    return createResponse(res, true, 200, "Plans fetched successfully", data, false);
+  } catch (error: any) {
+    return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
+  }
+};
