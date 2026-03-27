@@ -84,3 +84,20 @@ export const userPurchasedplan = async (req: any, res: any) => {
     return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
   }
 };
+
+export const userViewCourse = async (req: any, res: any) => {
+  try {
+    const user_id = req.user.id;
+   const user=await users.findOne({where:{id:user_id}});
+   const remaingCredit=parseInt(user?.credit);
+   if(remaingCredit>0){
+    const final:any=remaingCredit-1
+   await users.update({id:user_id},{credit:final})
+   return createResponse(res, true, 200, "success", [], false);
+   }else{
+ return createResponse(res, false, 400, "You have insufficient credit please purschase", [], true);
+   } 
+  } catch (error: any) {
+    return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
+  }
+};
