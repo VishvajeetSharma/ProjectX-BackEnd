@@ -1,3 +1,4 @@
+import { course } from "../../entities/course";
 import { mastercourse } from "../../entities/mastercourse";
 import { masterplan } from "../../entities/masterplan";
 import { plan } from "../../entities/plan";
@@ -6,33 +7,71 @@ import { createResponse } from "../../helpers/createResponse";
  
 
 // Dashboard States
-export const getDashboardStats = async (req: any, res: any) => {
+
+export const getUserDashboardStats = async (req: any, res: any) => {
   try {
-    const totalUsers = await users.count();
-    const activeUsers = await users.count({ where: { status: 1 } });
+    const user_Id = req.user.id; // assuming auth middleware se aa raha hai
 
+    // ===== USER RECORD =====
+    const userData = await users.findOne({
+      where: { id: user_Id }
+    });
+
+    // ===== TOTAL PLANS =====
     const totalPlans = await masterplan.count();
-    const activePlans = await masterplan.count({ where: { status: 1 } });
 
+    // ===== PURCHASED PLANS =====
+    const purchasedPlans = await plan.count({
+      where: { user_id: user_Id }
+    });
+
+    // ===== TOTAL COURSES =====
     const totalCourses = await mastercourse.count();
-    const activeCourses = await mastercourse.count({ where: { status: 1 } });
 
-    // Mocking monthly data for the graph (can be improved with actual query)
+    // ===== USER COURSES (AGAR TRACK KARTE HO) =====
+    const userCourses = await course.count({
+      where: { user_id: user_Id }
+    });
+
+    // ===== REMAINING CREDIT =====
+    const remainingCredit = userData?.credit || 0;
+
+    // ===== MONTHLY TREND DATA (ADMIN STYLE) =====
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const graphData = months.map((month) => ({
+    const chartData = months.map((month) => ({
       name: month,
-      users: Math.floor(Math.random() * 100),
-      courses: Math.floor(Math.random() * 20),
+      plans: Math.floor(Math.random() * 20),
+      courses: Math.floor(Math.random() * 10),
     }));
 
-    return createResponse(res, true, 200, "Dashboard stats fetched successfully", {
-      users: { total: totalUsers, active: activeUsers },
-      plans: { total: totalPlans, active: activePlans },
-      courses: { total: totalCourses, active: activeCourses },
-      graphData
-    }, false);
+    return createResponse(
+      res,
+      true,
+      200,
+      "User dashboard stats fetched successfully",
+      {
+        user: userData,
+        stats: {
+          totalPlans,
+          purchasedPlans,
+          totalCourses,
+          userCourses,
+          remainingCredit
+        },
+        chartData
+      },
+      false
+    );
+
   } catch (error: any) {
-    return createResponse(res, false, 500, error.message || "Internal Server Error", [], true);
+    return createResponse(
+      res,
+      false,
+      500,
+      error.message || "Internal Server Error",
+      [],
+      true
+    );
   }
 };
 

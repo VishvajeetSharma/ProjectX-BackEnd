@@ -2,12 +2,15 @@ import express from "express";
 import { userLogin, userRegister } from "../../controller/usercontroller/userauthcontroller";
 import { validateMiddleware } from "../../middleware/validationMiddleware";
 import { verifyToken } from "../../middleware/authMiddleware";
-import { userPurchasedPlan, userPurchasePlan, userViewCourse } from "../../controller/usercontroller/usermastermasterdata";
+import { getUserDashboardStats, userPurchasedPlan, userPurchasePlan, userViewCourse } from "../../controller/usercontroller/usermastermasterdata";
 const userRouter = express.Router();
 
 // Auth
 userRouter.post("/register", validateMiddleware, userRegister);  
 userRouter.post("/login", validateMiddleware, userLogin);
+
+// Dashboard State
+userRouter.get("/user-state", verifyToken, getUserDashboardStats);
 
 // Plan
 userRouter.post("/user-purchase-plan",verifyToken,userPurchasePlan); 
