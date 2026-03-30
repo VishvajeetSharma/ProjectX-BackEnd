@@ -1,5 +1,5 @@
 import express from 'express';
-import { adminLogin, adminRegister, adminUpdatePassword } from '../../controller/admincontroller/adminauthcontroller';
+import { adminLogin, adminRegister, adminUpdatePassword, adminForgetPassword } from '../../controller/admincontroller/adminauthcontroller';
 import { 
   createmastercourse, getmastercourse, getmastercoursebyid, updatemastercourse, deletemastercourse, 
   createmasterplan, getmasterplan, getmasterplanbyid, updatemasterplan, deletemasterplan, 
@@ -13,6 +13,7 @@ const adminRouter = express.Router();
 // Auth Routes
 adminRouter.post("/register", validateMiddleware, adminRegister);
 adminRouter.post("/login", validateMiddleware, adminLogin);
+adminRouter.post("/forget-password", adminForgetPassword);
 adminRouter.put("/update-password", verifyToken, adminUpdatePassword);
 
 // Dashboard Stats

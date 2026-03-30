@@ -19,6 +19,6 @@ userRouter.get("/user-purchased-plan",verifyToken,userPurchasedPlan);
 // Course
 userRouter.get("/user-view-course",verifyToken,userViewCourse);
 
-userRouter.post("/forget-password",userForgetPassword)
+userRouter.post("/forget-password", userForgetPassword);
 userRouter.put("/update-password", verifyToken, userUpdatePassword);
 export default userRouter;

@@ -3,6 +3,7 @@ import { createResponse } from "../../helpers/createResponse";
 import bcrypt from 'bcrypt';
 import { generateToken } from "../../helpers/jwt";
 import { admin } from '../../entities/admin';
+import { adminForgetPasswordService } from "../../services/adminForgetPasswordService";
 export const adminRegister = async (req: any, res: any) => {
  try{
  const { name, email, password="Test@12345", mobile } = req.body;
@@ -64,4 +65,19 @@ export const adminUpdatePassword = async (req: any, res: any) => {
   } catch (error) {
     return createResponse(res, false, 500, "Internal Server Error", [], true);
   }
+};
+
+export const adminForgetPassword = async (req: any, res: any) => {
+  const { email } = req.body;
+  
+  const result = await adminForgetPasswordService(email);
+  
+  return createResponse(
+    res,
+    result.success,
+    result.status,
+    result.message,
+    [],
+    !result.success
+  );
 };
