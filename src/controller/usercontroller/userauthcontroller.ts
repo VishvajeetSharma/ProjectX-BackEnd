@@ -133,3 +133,28 @@ export const userForgetPassword = async (req: any, res: any) => {
     return createResponse(res, false, 500, "Internal Server Error", [], true);
   }
 };
+
+export const userUpdatePassword = async (req: any, res: any) => {
+  const { oldPassword, newPassword } = req.body;
+  const userId = req.user.id; // Assuming from auth middleware
+
+  try {
+    const user = await users.findOne({ where: { id: userId } });
+    if (!user) {
+      return createResponse(res, false, 404, "User not found", [], true);
+    }
+
+    const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isOldPasswordValid) {
+      return createResponse(res, false, 400, "Old password is incorrect", [], true);
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedNewPassword;
+    await user.save();
+
+    return createResponse(res, true, 200, "Password updated successfully", [], false);
+  } catch (error) {
+    return createResponse(res, false, 500, "Internal Server Error", [], true);
+  }
+};
