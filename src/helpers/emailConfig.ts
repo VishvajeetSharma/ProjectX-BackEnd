@@ -3,8 +3,8 @@ import nodemailer from "nodemailer";
 export const emailTransporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER || "vsharma6705@gmail.com",
-    pass: process.env.EMAIL_PASSWORD || "hljx cwze xfqn vqyg",
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
   },
 });
 
@@ -15,7 +15,7 @@ export const sendEmail = async (
 ) => {
   try {
     const mailDetails = {
-      from: process.env.EMAIL_USER || "vsharma6705@gmail.com",
+      from: process.env.EMAIL_USER,
       to,
       subject,
       html: htmlContent,
