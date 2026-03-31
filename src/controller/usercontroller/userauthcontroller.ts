@@ -108,26 +108,48 @@ export const userUpdatePassword = async (req: any, res: any) => {
   }
 };
 export const userUpdateProfile = async (req: any, res: any) => {
-  const { name,email,mobile,address } = req.body;
-  const userId = req.user.id; 
-  const {profile}=req.files;
+  const { name, email, mobile, address } = req.body;
+  const userId = req.user.id;
+  const profile = req.files?.profile;
 
   try {
-      const user = await users.findOne({ where: { id: userId } });
+    const user = await users.findOne({ where: { id: userId } });
+
     if (!user) {
       return createResponse(res, false, 404, "User not found", [], true);
-    } 
-    let profileName=user?.profile
-     await  uploadFile(profile, "uploads", (err, thumbName) => {
-          if (err) {
-            return createResponse(res, false, 500, err, [], true);
-          }
-          profileName=thumbName
-        })
-  
-    const result=await users.update({id:userId},{name,email,mobile,address,profile:profileName})
+    }
 
-    return createResponse(res, true, 200, "Password updated successfully", result, false);
+    let profileName = user.profile;
+
+    if (profile) {
+  uploadFile(profile, "uploads", async (err: any, fileName: any) => {
+    if (err) {
+      return createResponse(res, false, 500, err, [], true);
+    }
+
+    profileName = fileName;
+
+    await users.update({ id: userId },
+      { name, email, mobile, address, profile: profileName },
+  
+    );
+
+  
+    const updatedUser = await users.findOne({ where: { id: userId } });
+
+    return createResponse(res, true, 200, "Profile updated successfully", updatedUser, false);
+  });
+} else {
+  await users.update({ id: userId },
+    { name, email, mobile, address, profile: profileName },
+
+  );
+
+  const updatedUser = await users.findOne({ where: { id: userId } });
+
+  return createResponse(res, true, 200, "Profile updated successfully", updatedUser, false);
+}
+
   } catch (error) {
     return createResponse(res, false, 500, "Internal Server Error", [], true);
   }
