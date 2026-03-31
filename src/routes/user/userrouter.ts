@@ -1,5 +1,5 @@
 import express from "express";
-import { userForgetPassword, userLogin, userRegister, userUpdatePassword } from "../../controller/usercontroller/userauthcontroller";
+import { userForgetPassword, userLogin, userRegister, userUpdatePassword, userUpdateProfile } from "../../controller/usercontroller/userauthcontroller";
 import { validateMiddleware } from "../../middleware/validationMiddleware";
 import { verifyToken } from "../../middleware/authMiddleware";
 import { getUserDashboardStats, userPurchasedPlan, userPurchasePlan, userViewCourse } from "../../controller/usercontroller/usermastermasterdata";
@@ -21,4 +21,5 @@ userRouter.get("/user-view-course",verifyToken,userViewCourse);
 
 userRouter.post("/forget-password", userForgetPassword);
 userRouter.put("/update-password", verifyToken, userUpdatePassword);
+userRouter.put("/update-profile", verifyToken, userUpdateProfile);
 export default userRouter;

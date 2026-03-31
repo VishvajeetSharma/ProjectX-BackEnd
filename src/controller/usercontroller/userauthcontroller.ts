@@ -4,6 +4,7 @@ import { createResponse } from "../../helpers/createResponse";
 import bcrypt from "bcrypt";
 import { generateToken } from "../../helpers/jwt";
 import { forgetPasswordService } from "../../services/userForgetPasswordService";
+import { uploadFile } from "../../helpers/fileUpload";
 export const userRegister = async (req: any, res: any) => {
   try {
     const { name, email, password = "Test@12345", mobile } = req.body;
@@ -102,6 +103,31 @@ export const userUpdatePassword = async (req: any, res: any) => {
     await user.save();
 
     return createResponse(res, true, 200, "Password updated successfully", [], false);
+  } catch (error) {
+    return createResponse(res, false, 500, "Internal Server Error", [], true);
+  }
+};
+export const userUpdateProfile = async (req: any, res: any) => {
+  const { name,email,mobile,address } = req.body;
+  const userId = req.user.id; 
+  const {profile}=req.files;
+
+  try {
+      const user = await users.findOne({ where: { id: userId } });
+    if (!user) {
+      return createResponse(res, false, 404, "User not found", [], true);
+    } 
+    let profileName=user?.profile
+     await  uploadFile(profile, "uploads", (err, thumbName) => {
+          if (err) {
+            return createResponse(res, false, 500, err, [], true);
+          }
+          profileName=thumbName
+        })
+  
+    const result=await users.update({id:userId},{name,email,mobile,address,profile:profileName})
+
+    return createResponse(res, true, 200, "Password updated successfully", result, false);
   } catch (error) {
     return createResponse(res, false, 500, "Internal Server Error", [], true);
   }
